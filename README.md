@@ -1,3 +1,12 @@
+links:
+
+* http://sw1nn.com/blog/2012/04/11/clojure-stm-what-why-how/
+* http://java.ociweb.com/mark/stm/article.html
+
+
+
+Дилема - инженер vs оператор
+
 
 Сложность главный враг программиста.
 Фред Брукс, различал два типа сложности:
