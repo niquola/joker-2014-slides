@@ -72,7 +72,30 @@
               [:a {:href (str "users/" (:id u)} (:name u)])]]])
 ```
 
+Здесь мы исспользовали библиотеку `hiccup`, которая состоит в сущности из одной функции
+`(html & content)`, принимающей на вход структуру данных clojure и преобразующая ее в HTML:
 
+```
+[:tag-name {:attr "value"} & content]
+```
+
+Итак одна функция и соглашение заменили нам templating движок. Причем композицию
+наших шаблонов или как их иногда называют вьюх, мы можем делать как простую композицию функций.
+И например сделать верхнеуровневый шаблон - layout:
+
+```clojure
+(defn layout [& content]
+   [:html
+     [:head 
+       [:style {:src ".."}]]
+     [:body
+       [:div.content content]]])
+       
+(defn users-page [users]
+    (layout 
+       [:ul (for [u users]
+         [:li (:name u)]])]))
+```
 
 
 
