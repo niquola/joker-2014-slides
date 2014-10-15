@@ -4,11 +4,11 @@
 <head>
 <meta charset="utf-8">
 
-<title>fhir</title>
+<title>jocker.clj</title>
 <link rel="shortcut icon" href="favicon.png">
 
-<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
-<meta name="author" content="Hakim El Hattab">
+<meta name="description" content="Slides for jocker conference">
+<meta name="author" content="Nikolay Ryzhikov">
 
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -387,6 +387,67 @@ body {
       ```
     </script></section>
 
+
+    <section data-markdown>
+      <script type="text/template">
+       ## (protocols)
+
+       ```clojure
+       (defprotocol Speaker
+         (say [this]))
+
+       (deftype Rubist [name age city]
+         Speaker
+         (say [this]
+             (str "Hello i'm ruby")))
+
+       (deftype Javoid [name age city]
+         Speaker
+         (say [this]
+             (str "Hello i'm java")))
+       ```
+      </script>
+    </section>
+
+    <section data-markdown>
+      <script type="text/template">
+      ## Expression problem
+      ---
+
+      ```
+      | type   | op1  | op2  | ? |
+      | ------ |:----:| ----:|   |
+      | tp1    | x    | x    |   |
+      | tp2    | x    | x    |   |
+      | tp3    | x    | x    |   |
+      -> ?
+      ```
+      ---
+
+      ### add new type
+      ### add new behavior (interface)
+      </script>
+    </section>
+
+    <section data-markdown>
+      <script type="text/template">
+       ## (dynamic dispatch)
+       ```clojure
+       (defmulti encounter
+          (fn [x y]
+            [(:Species x) (:Species y)]))
+
+       (defmethod encounter
+         [:Bunny :Lion] [b l]
+         :run-away)
+
+       (defmethod encounter
+         [:Bunny :Bunny] [b l]
+         :sex)
+       ```
+      </script>
+    </section>
+
     <section data-markdown><script type="text/template">
        ### (web?)
        ```clojure
@@ -572,6 +633,49 @@ body {
           (if (= i 2) ret ...))))
 
 (<!! (google "clojure"))
+```
+    </script>
+    </section>
+
+    <section>
+      <h2>(Paradigm)</h2>
+      <hr/>
+      <h2>(as a library)</h2>
+    </section>
+
+    <section data-markdown>
+    <script type="text/template">
+```clojure
+(defroutes routes
+  (GET "/ws" []  chat-handler)
+  (files "" {:root "static"})
+  (not-found "<p>ups</p>" ))
+
+(def app (-> routes site)
+
+(defn -main [& args]
+  (run-server app {:port 9899}))
+
+```
+    </script>
+    </section>
+
+    <section data-markdown>
+    <script type="text/template">
+```clojure
+;; TODO use async
+(def sess (atom #{}))
+
+(defn mesg-received [msg]
+ (let [data (read-json msg)]
+  (doseq [s sess]
+    (send! s data))))
+
+(defn chat-handler [req]
+ (with-channel req ch
+  (swap! sess conj ch)
+  (on-receive ch #'on-message)
+  (on-close ch #(swap! sess disj ch))))))
 ```
     </script>
     </section>
