@@ -396,7 +396,8 @@ body {
           :where [:= :status "active"]})
     
       (sql/format users)
-      ["SELECT * FROM users WHERE (status= ?)" "active"]
+      ;; SELECT * FROM users 
+      ;; WHERE (status= 'active')
       ```
     </script></section>
 
