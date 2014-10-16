@@ -396,7 +396,7 @@ body {
           :where [:= :status "active"]})
     
       (sql/format users)
-      ;; =>  ["SELECT * FROM users WHERE (status= ?)" "active"]
+      ["SELECT * FROM users WHERE (status= ?)" "active"]
       ```
     </script></section>
 
@@ -444,7 +444,16 @@ body {
     <script type="text/template">
       ### (core.async)
 ```clojure
+(def gosha (chan))
+(def vova (chan))
 
+(go-loop
+  (let [x (<! gosha)]
+     (println x)
+     (<! (timeout 1000))
+     (>! vova (inc x))
+     (recur)))
+(put! gosha 1)
 ```
     </script>
     </section>
