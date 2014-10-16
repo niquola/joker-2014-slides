@@ -166,6 +166,14 @@ body {
        ```
       </script>
     </section>
+    
+    <section>
+  <h2>Persistent (tries)<h2>
+  <hr/>
+  <img src="persistent-dt.png" style="background: white;"/>
+  <hr/>
+  <p> Path Copying / Structure Sharing </p>
+    </section>
 
     <section data-markdown><script type="text/template">
        ### (ast)
@@ -335,24 +343,27 @@ body {
           pure-fn)
       ```
     </script></section>
+    <section data-markdown>
+<script type="text/template">
+## (protocols)
 
-    <section data-markdown><script type="text/template">
-      ### (heigh order fn)
-      ```clojure
-      ;; chain of responsibility
-      (def mk-filter [next pred]
-        (fn [x]
-          (when (pred x) (next x))))
+```clojure
+(defprotocol Speaker
+ (say [this]))
 
-      (def pipe
-        (-> identity
-          (step1 odd)
-          (step2 #(> 10 %)))
+(deftype Rubist [name age city]
+ Speaker
+ (say [this]
+		 (str "Hello i'm ruby")))
 
-      (pipe 10) => nil
-      (pipe 12) => 12
-      ```
-    </script></section>
+(deftype Javoid [name age city]
+ Speaker
+ (say [this]
+		 (str "Hello i'm java")))
+```
+</script>
+</section>
+
 
     <section data-markdown><script type="text/template">
        ### (web?)
