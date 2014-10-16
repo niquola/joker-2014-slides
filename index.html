@@ -338,39 +338,6 @@ body {
 
     <section data-markdown><script type="text/template">
       ### (heigh order fn)
-
-      ```java
-      nums.forEach(System.out::println);
-      ```
-    </script></section>
-
-    <section data-markdown><script type="text/template">
-       ### (heigh order fn)
-       ```clojure
-        (map #(* % %) [1 2 3]) ;;=> [1 4 9]
-        (sum [1 2 3]) ;;=> 6
-        (filter odd [1 2 3]) ;;=> [2]
-       ```
-    </script></section>
-    <section data-markdown><script type="text/template">
-       ### (heigh order fn)
-       ```clojure
-       (reduce f val col)
-
-       (defn sum [coll] (reduce + 0 coll))
-
-       (defn map [f coll]
-          (reduce #(conj %1 (f %2)) coll []))
-
-       (defn filter [f coll]
-         (reduce
-           #(if-not (f x) acc (conj acc x))
-           [] coll))
-       ```
-    </script></section>
-
-    <section data-markdown><script type="text/template">
-      ### (heigh order fn)
       ```clojure
       ;; chain of responsibility
       (def mk-filter [next pred]
@@ -386,67 +353,6 @@ body {
       (pipe 12) => 12
       ```
     </script></section>
-
-
-    <section data-markdown>
-      <script type="text/template">
-       ## (protocols)
-
-       ```clojure
-       (defprotocol Speaker
-         (say [this]))
-
-       (deftype Rubist [name age city]
-         Speaker
-         (say [this]
-             (str "Hello i'm ruby")))
-
-       (deftype Javoid [name age city]
-         Speaker
-         (say [this]
-             (str "Hello i'm java")))
-       ```
-      </script>
-    </section>
-
-    <section data-markdown>
-      <script type="text/template">
-      ## Expression problem
-      ---
-
-      ```
-      | type   | op1  | op2  | ? |
-      | ------ |:----:| ----:|   |
-      | tp1    | x    | x    |   |
-      | tp2    | x    | x    |   |
-      | tp3    | x    | x    |   |
-      -> ?
-      ```
-      ---
-
-      ### add new type
-      ### add new behavior (interface)
-      </script>
-    </section>
-
-    <section data-markdown>
-      <script type="text/template">
-       ## (dynamic dispatch)
-       ```clojure
-       (defmulti encounter
-          (fn [x y]
-            [(:Species x) (:Species y)]))
-
-       (defmethod encounter
-         [:Bunny :Lion] [b l]
-         :run-away)
-
-       (defmethod encounter
-         [:Bunny :Bunny] [b l]
-         :sex)
-       ```
-      </script>
-    </section>
 
     <section data-markdown><script type="text/template">
        ### (web?)
@@ -464,18 +370,6 @@ body {
        ```
     </script></section>
 
-    <section data-markdown><script type="text/template">
-       ### (web?)
-       ```clojure
-       (->
-         (put-in-db))
-         (JDBC)
-         (ORM)
-         (fill data-transfer-obj)
-         (html-template)
-         (build HTTP responce)
-       ```
-    </script></section>
     <section data-markdown><script type="text/template">
       ### (templating)
       ```clojure
@@ -496,26 +390,13 @@ body {
     <section data-markdown><script type="text/template">
       ### (sql)
       ```clojure
-      (def users {:select [:*] :from :users })
-      (defn active [q]
-       (with-merge q
-         [:= :users.active true]))
-
-      (defn with-role [q role]
-        (with-join q
-          [[:user_roles :ur]
-           [:= :ur.uid :users.id]]
-          [[:roles :r]
-           [:= :ur.rid :r.id]
-           [:= :role.name role]]))
-      ```
-    </script></section>
-    <section data-markdown><script type="text/template">
-      ### (sql composition)
-      ```clojure
-      (-> users
-         (admins)
-         (with-role "admin"))
+      (def users 
+         {:select [:*] 
+          :from   :users 
+          :where [:= :status "active"]})
+    
+      (sql/format users)
+      ;; =>  ["SELECT * FROM users WHERE (status= ?)" "active"]
       ```
     </script></section>
 
@@ -550,46 +431,6 @@ body {
     </section>
 
     <section data-markdown>
-    <script type="text/template">
-      ### (STM)
-      ---
-      ```clojure
-      (def account1
-        (ref 100 :validator pos?))
-      (def account2 (ref 0))
-
-      (defn transfer [amount from to]
-        (dosync
-          (alter from - amount)
-          (alter to   + amount)))
-      ```
-    </script>
-    </section>
-
-    <section data-markdown>
-    <script type="text/template">
-      ### (STM)
-      ---
-      ```clojure
-      (def bonus (ref 20))
-      (def account (ref 1000))
-
-      (defn mk-bonus [acc]
-        (dosync
-          (ensure bonus)
-          (alter acc + @bonus)))
-      ```
-    </script>
-    </section>
-
-    <section data-markdown>
-      <script type="text/template">
-      ### (callback-hell)
-      ![](cbh.jpg)
-      </script>
-    </section>
-
-    <section data-markdown>
       <script type="text/template">
       ![](async1.png)
 
@@ -603,36 +444,7 @@ body {
     <script type="text/template">
       ### (core.async)
 ```clojure
-(defn fake-search [kind]
-  (fn [c query]
-    (go
-     (<! (timeout (rand-int 100)))
-     (>! c [kind query]))))
 
-(def web1 (fake-search :web1))
-(def web2 (fake-search :web2))
-(def image1 (fake-search :image1))
-(def image2 (fake-search :image2))
-
-```
-    </script>
-    </section>
-    <section data-markdown>
-    <script type="text/template">
-      ### (core.async)
-```clojure
-(defn fastest [q & rs]
-  (let [c (chan)]
-    (doseq [r rs] (r c query)) c))
-
-(defn google [query]
-  (let [c (chan) t (timeout 80)]
-    (go (>! c (<! (fastest query web1 web2))))
-    (go (>! c (<! (fastest query image1 image2))))
-    (go (loop [i 0 ret []]
-          (if (= i 2) ret ...))))
-
-(<!! (google "clojure"))
 ```
     </script>
     </section>
